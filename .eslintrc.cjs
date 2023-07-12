@@ -19,5 +19,14 @@ module.exports = {
       
     ],
     "react/prop-types": "off",
+
+    "overrides": [
+      {
+          "files": ["**/newItemForm/*.jsx"],
+          "rules": {
+              "your-case-sensitivity-rule": "off"
+          }
+      }
+  ]
   },
 }

@@ -7,7 +7,7 @@ import { faTrash, faEdit, faCheck } from "@fortawesome/free-solid-svg-icons";  /
 import "./shoppingList.css";  // Stylesheet for our ShoppingList component
 import { Button } from '@mantine/core';
 import { Plus } from 'tabler-icons-react';
-import NewItemForm from "../newItemForm/NewItemForm.JSX";
+import NewItemForm from "../newItemForm/NewItemForm.jsx";
 
 // Define the ShoppingList component
 const ShoppingList = () => {
@@ -66,6 +66,18 @@ const ShoppingList = () => {
 
     // The onSubmit handler used in our form.
     const handleSubmit = async (e) => {
+
+
+        // Prevent blur
+        e.target.elements.newItem.disabled = true;
+
+        // Re-enable after timeout
+        setTimeout(() => {
+            e.target.elements.newItem.disabled = false;
+        }, 500);
+
+        // Submit logic...
+
         e.preventDefault();
         setIsSubmitting(true);
         if (!newItemError && newItem.length >= 2) {
@@ -126,6 +138,10 @@ const ShoppingList = () => {
         validateInput(value, setEditValueError);
     };
 
+    const handleSetFocus = () => {
+        setNewItemInputIsFocused(true);
+    };
+
 
 
     const newItemSection = (
@@ -139,8 +155,7 @@ const ShoppingList = () => {
                     value={newItem}
                     onChange={handleNewItemChange}
                     placeholder="Add new item"
-                    onFocus={() => setNewItemInputIsFocused(true)}
-                    onBlur={handleBlur}
+                    
                 />
 
                 <Button className="shopping-list__add-new-item-button" type="submit"
@@ -238,19 +253,19 @@ const ShoppingList = () => {
     }
 
 
-
-
     return (
         <main className="shopping-list">
             <NewItemForm
-                input={newItem}
-                focused={newItemInputIsFocused}
-                onChange={handleNewItemChange}
-                onFocus={() => setNewItemInputIsFocused(true)}
-                onBlur={handleBlur}
-                onSubmit={handleSubmit}/>
-            
-            {newItemSection}
+                handleSubmit = {handleSubmit}
+                handleNewItemChange = {handleNewItemChange}
+                handleBlur = {handleBlur}
+                newItem = {newItem}
+                newItemInputIsFocused = {newItemInputIsFocused}
+                handleOnFocus={() => setNewItemInputIsFocused(true)}
+                handleNewItemButtonClick={() => setNewItemInputIsFocused(true)}
+                />
+
+            {/* {newItemSection} */}
             <div className="shopping-list__items-container">
                 {content}
 
