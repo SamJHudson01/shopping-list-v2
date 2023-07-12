@@ -1,0 +1,39 @@
+{
+  "name": "shoppinglistv2",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "lint": "eslint src --ext js,jsx --report-unused-disable-directives --max-warnings 0",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@emotion/react": "^11.11.1",
+    "@fortawesome/fontawesome-free": "^5.15.3",
+    "@fortawesome/fontawesome-svg-core": "^1.2.36",
+    "@fortawesome/free-brands-svg-icons": "^5.15.3",
+    "@fortawesome/free-regular-svg-icons": "^5.15.3",
+    "@fortawesome/free-solid-svg-icons": "^5.15.3",
+    "@fortawesome/react-fontawesome": "^0.1.16",
+    "@mantine/core": "^6.0.16",
+    "@mantine/hooks": "^6.0.16",
+    "@tanstack/react-query": "^4.29.19",
+    "@tanstack/react-query-devtools": "^4.29.19",
+    "axios": "^1.4.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "tabler-icons-react": "^1.56.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.14",
+    "@types/react-dom": "^18.2.6",
+    "@vitejs/plugin-react": "^4.0.1",
+    "eslint": "^8.44.0",
+    "eslint-plugin-react": "^7.32.2",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "eslint-plugin-react-refresh": "^0.4.1",
+    "vite": "^4.4.0"
+  }
+}
