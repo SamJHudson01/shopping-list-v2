@@ -7,7 +7,7 @@ import { faTrash, faEdit, faCheck } from "@fortawesome/free-solid-svg-icons";  /
 import "./shoppingList.css";  // Stylesheet for our ShoppingList component
 import { Button } from '@mantine/core';
 import { Plus } from 'tabler-icons-react';
-import NewItemForm from "../newItemForm/NewItemForm.jsx";
+import AddNewItemForm from "../addNewItemForm/AddNewItemForm.jsx";
 
 // Define the ShoppingList component
 const ShoppingList = () => {
@@ -255,7 +255,7 @@ const ShoppingList = () => {
 
     return (
         <main className="shopping-list">
-            <NewItemForm
+            <AddNewItemForm
                 handleSubmit = {handleSubmit}
                 handleNewItemChange = {handleNewItemChange}
                 handleBlur = {handleBlur}
