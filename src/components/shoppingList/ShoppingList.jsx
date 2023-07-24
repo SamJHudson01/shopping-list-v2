@@ -20,6 +20,7 @@ const ShoppingList = () => {
     const [newItemError, setNewItemError] = useState("");
     const [newItemInputIsFocused, setNewItemInputIsFocused] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const blurTimeout = useRef(null);
 
 
 
@@ -66,20 +67,12 @@ const ShoppingList = () => {
 
     // The onSubmit handler used in our form.
     const handleSubmit = async (e) => {
-
-
-        // Prevent blur
+        e.preventDefault();
         e.target.elements.newItem.disabled = true;
-
-        // Re-enable after timeout
         setTimeout(() => {
             e.target.elements.newItem.disabled = false;
         }, 500);
-
-        // Submit logic...
-
         e.preventDefault();
-        setIsSubmitting(true);
         if (!newItemError && newItem.length >= 2) {
             try {
                 await addItemMutation.mutateAsync({ userId: 1, name: newItem, completed: false });
@@ -88,7 +81,6 @@ const ShoppingList = () => {
                 console.log(error);
             }
         }
-        setIsSubmitting(false);
     };
 
     const handleEdit = (id, name) => {
@@ -99,11 +91,11 @@ const ShoppingList = () => {
         }, 0);
     };
 
-    const handleBlur = (e) => {
-        if (!isSubmitting) {
-            setNewItemInputIsFocused(false);
-        }
-    };
+    const handleBlur = () => {
+        setNewItem(''); // Clear the input
+        setNewItemInputIsFocused(false); // Remove focus
+      };
+      
 
 
     const handleUpdate = (e) => {
@@ -111,7 +103,10 @@ const ShoppingList = () => {
         if (editValue.trim().length >= 2) { // only proceed if editValue is valid
             updateItemMutation.mutate({ id: editId, name: editValue });
             setEditId(null); // clear editId to exit edit mode
+        } else {
+
         }
+
     };
 
 
@@ -138,33 +133,20 @@ const ShoppingList = () => {
         validateInput(value, setEditValueError);
     };
 
-    const handleSetFocus = () => {
-        setNewItemInputIsFocused(true);
+    const handleDelayedBlur = () => {
+        clearTimeout(blurTimeout.current);
+    
+        blurTimeout.current = setTimeout(() => {
+            if (newItem.length >= 2) {
+                handleBlur();
+            } else {
+                setNewItemInputIsFocused(false);
+            }
+        }, 200);
     };
 
 
 
-    const newItemSection = (
-        <form className="shopping-list__new-item-form" onSubmit={handleSubmit}>
-            <div className="shopping-list__add-new-item-input-container">
-                <input
-                    ref={newInputRef}
-                    className={`shopping-list__add-new-item-input ${(newItemInputIsFocused && newItem.length < 2 && !isSubmitting) ? 'shopping-list__add-new-item-input--error' : ''}`}
-                    type="text"
-                    id="newItem"
-                    value={newItem}
-                    onChange={handleNewItemChange}
-                    placeholder="Add new item"
-                    
-                />
-
-                <Button className="shopping-list__add-new-item-button" type="submit"
-                    onClick={() => setNewItemInputIsFocused(true)}>
-                    <Plus />
-                </Button>
-            </div>
-        </form>
-    );
 
     let content;  // Variable to store the content to be rendered
     if (isLoading) {
@@ -200,13 +182,16 @@ const ShoppingList = () => {
                             onChange={handleEditValueChange}
                             // onKeyDown={(e) => handleUpdate(e, item.id)}
                             onBlur={() => {
-                                // Delay onBlur event to ensure that it happens after handleUpdate
-                                setTimeout(() => {
-                                    if (editId) { // Only revert if still in edit mode
-                                        setEditValue(item.name); // Revert to the original item name
-                                        setEditId(null); // Exit edit mode
+                                clearTimeout(blurTimeout.current);
+                                blurTimeout.current = setTimeout(() => {
+                                    if (editId && editValue.trim().length >= 2) {
+                                        setEditValue(item.name);
+                                        setEditId(null);
+                                    } else if (editId && editValue.trim().length < 2) {
+                                        setEditValue(''); // Clear the edit value
+                                        setEditId(null); // Exit the edit mode
                                     }
-                                }, 200); // Adjust delay time as needed
+                                }, 200);
                             }}
                         />
 
@@ -217,8 +202,17 @@ const ShoppingList = () => {
                         {
                             editId === item.id ? (
                                 <button
-                                    className="shoppping-list__item-save-button shopping-list__item-button"
-                                    onClick={(e) => handleUpdate(e)}
+                                    className={`shoppping-list__item-save-button shopping-list__item-button ${editValue.length < 2 ? 'button--disabled' : ''}`}
+                                    onClick={(e) => {
+                                        if (editValue.length < 2) {
+                                            e.preventDefault();
+                                            clearTimeout(blurTimeout.current);
+                                            editInputRef.current.focus();
+                                        } else {
+                                            clearTimeout(blurTimeout.current);
+                                            handleUpdate(e);
+                                        }
+                                    }}
                                 >
                                     <FontAwesomeIcon icon={faCheck} />
                                 </button>
@@ -226,6 +220,7 @@ const ShoppingList = () => {
                                 <button
                                     className="shoppping-list__item-edit-button shopping-list__item-button"
                                     onClick={() => handleEdit(item.id, item.name)}
+
                                 >
                                     <FontAwesomeIcon icon={faEdit} />
                                 </button>
@@ -256,25 +251,20 @@ const ShoppingList = () => {
     return (
         <main className="shopping-list">
             <AddNewItemForm
-                handleSubmit = {handleSubmit}
-                handleNewItemChange = {handleNewItemChange}
-                handleBlur = {handleBlur}
-                newItem = {newItem}
-                newItemInputIsFocused = {newItemInputIsFocused}
+                handleSubmit={handleSubmit}
+                handleNewItemChange={handleNewItemChange}
+                handleBlur={handleBlur}
+                newItem={newItem}
+                newItemInputIsFocused={newItemInputIsFocused}
                 handleOnFocus={() => setNewItemInputIsFocused(true)}
                 handleNewItemButtonClick={() => setNewItemInputIsFocused(true)}
-                />
-
-            {/* {newItemSection} */}
+            />
             <div className="shopping-list__items-container">
                 {content}
-
             </div>
 
         </main>
     )
-
-
 }
 
 export default ShoppingList
